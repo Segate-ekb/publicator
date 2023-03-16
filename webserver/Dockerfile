@@ -21,21 +21,19 @@ COPY ./webserver/scripts/download_og.sh /download_og.sh
 
 WORKDIR /tmp
 COPY ./webserver/distr ./${downloads}
-RUN rm ./${downloads}/.gitkeep 
-RUN rm -rf ${downloads}/thin.client*.tar.gz
-RUN rm -rf ${downloads}/client*.tar.gz
-RUN rm -rf ${downloads}/1c_edt*.tar.gz
-RUN if [ -z "$(ls -A ${downloads})" ]; then \
+RUN rm ./${downloads}/.gitkeep \
+  && rm -rf ${downloads}/thin.client*.tar.gz \
+  && rm -rf ${downloads}/client*.tar.gz \
+  && rm -rf ${downloads}/1c_edt*.tar.gz \
+  && if [ -z "$(ls -A ${downloads})" ]; then \
   apk --no-cache add bash curl grep tar \
   && set -x \
   && sync; /download_og.sh; \
-  fi
-RUN  rm -rf ${downloads}/*thin*.tar.gz
-#RUN ls ${downloads} \
-#  && for file in ${downloads}/*.tar.gz; do \
-#  tar -xzf "$file" ; done
-RUN tar -xzf ${downloads}/${ONEC_VERSION}.tar.gz
-RUN rm -rf ${downloads}/*.*
+  fi \
+  && rm -rf ${downloads}/*thin*.tar.gz \
+  && ls ${downloads} \
+  && for file in ${downloads}/*.tar.gz; do tar -xzf "$file"; done \
+  && rm -rf ${downloads}/*.*
 
 FROM ubuntu:20.04 as base
 
