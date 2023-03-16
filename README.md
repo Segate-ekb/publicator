@@ -1,4 +1,4 @@
-# tg_bot_webhook
+# Публикатор баз 1с
 
 ## Getting started
 
