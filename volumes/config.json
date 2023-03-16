@@ -1,0 +1,85 @@
+{
+    "bases": [
+        {
+            "Srvr": "mainframe",
+            "Ref": "tg_bot",
+            "publications": [
+                {
+                    "name": "test4",
+                    "enable": true,
+                    "enableStandardOData": false,
+                    "ws": {
+                        "publishExtensionsByDefault": false,
+                        "wsList": [
+                            {
+                                "name": "API_ESB",
+                                "alias": "servicesdatastream",
+                                "enable": "true",
+                                "reuseSessions": "autouse",
+                                "sessionMaxAge": "20",
+                                "poolSize": "10",
+                                "poolTimeout": "5"
+                            }
+                        ]
+                    },
+                    "httpServices": {
+                        "publishExtensionsByDefault": true,
+                        "publishByDefault": false,
+                        "hsList": [
+                            {
+                                "name": "telegram",
+                                "rootUrl": "telegram",
+                                "enable": "true",
+                                "reuseSessions": "autouse",
+                                "sessionMaxAge": "20",
+                                "poolSize": "10",
+                                "poolTimeout": "5"
+                            },
+                            {
+                                "name": "API_ESB2",
+                                "rootUrl": "servicesdatastream2",
+                                "enable": "true",
+                                "reuseSessions": "autouse",
+                                "sessionMaxAge": "20",
+                                "poolSize": "10",
+                                "poolTimeout": "5"
+                            }
+                        ]
+                    },
+                    "oidc": {
+                        "providers": [
+                            {
+                                "name": "authelia",
+                                "title": "Authelia",
+                                "authenticationClaimName": "email",
+                                "icon": "https://www.authelia.com/images/branding/logo-cropped.png",
+                                "providerconfig": {
+                                    "issuer": "https://auth.1cdevelopers.ru",
+                                    "authorization_endpoint": "https://auth.1cdevelopers.ru/api/oidc/authorization",
+                                    "token_endpoint": "https://auth.1cdevelopers.ru/api/oidc/token",
+                                    "jwks_uri": "https://auth.1cdevelopers.ru/jwks.json",
+                                    "userinfo_endpoint": "https://auth.1cdevelopers.ru/api/oidc/userinfo",
+                                    "response_types_supported": [
+                                        "token id_token"
+                                    ],
+                                    "scopes_supported": [
+                                        "openid",
+                                        "email",
+                                        "profile"
+                                    ]
+                                },
+                                "clientconfig": {
+                                    "authority": "https://auth.1cdevelopers.ru/api/oidc/authorization",
+                                    "client_id": "tg_bot",
+                                    "redirect_uri": "https://1c.1cdevelopers.ru/tg_bot/authform.html",
+                                    "response_type": "token id_token",
+                                    "scope": "openid email"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
