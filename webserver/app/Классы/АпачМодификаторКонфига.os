@@ -224,7 +224,7 @@
 			ТекстPublishExtensionsByDefault = СтрШаблон(" publishExtensionsByDefault=""%1"" ", Формат(Публикация.httpServices.publishExtensionsByDefault, "БЛ=false; БИ=true"));
 		КонецЕсли;
 
-		publishByDefault = "";
+		ТекстpublishByDefault = "";
 		Если Публикация.httpServices.Свойство("publishByDefault") Тогда
 			Лог.Отладка("Нашли свойство publishByDefault добавим его в конфигурацию");
 			ТекстpublishByDefault = СтрШаблон(" publishByDefault=""%1"" ", Формат(Публикация.httpServices.publishByDefault, "БЛ=false; БИ=true"));
