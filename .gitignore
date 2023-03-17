@@ -1,2 +1,4 @@
 *.env
-/webserver/distr
+/webserver/distr/*
+!/webserver/distr/.gitkeep
+/volumes/config.json

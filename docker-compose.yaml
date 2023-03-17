@@ -8,4 +8,4 @@ services:
       - 3333:3333
     volumes:
      - ./volumes/config.json:/opt/app/winow/config/config.json
-     - ./volumes/autumn-properties.json:/opt/app/winow/autumn-properties.json
+    

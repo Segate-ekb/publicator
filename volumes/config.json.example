@@ -1,8 +1,8 @@
 {
     "bases": [
         {
-            "Srvr": "mainframe",
-            "Ref": "tg_bot",
+            "Srvr": "Server",
+            "Ref": "Basename",
             "publications": [
                 {
                     "name": "test4",
@@ -12,8 +12,8 @@
                         "publishExtensionsByDefault": false,
                         "wsList": [
                             {
-                                "name": "API_ESB",
-                                "alias": "servicesdatastream",
+                                "name": "testws",
+                                "alias": "testws.1cws",
                                 "enable": "true",
                                 "reuseSessions": "autouse",
                                 "sessionMaxAge": "20",
@@ -27,17 +27,8 @@
                         "publishByDefault": false,
                         "hsList": [
                             {
-                                "name": "telegram",
-                                "rootUrl": "telegram",
-                                "enable": "true",
-                                "reuseSessions": "autouse",
-                                "sessionMaxAge": "20",
-                                "poolSize": "10",
-                                "poolTimeout": "5"
-                            },
-                            {
-                                "name": "API_ESB2",
-                                "rootUrl": "servicesdatastream2",
+                                "name": "tesths",
+                                "rootUrl": "tesths",
                                 "enable": "true",
                                 "reuseSessions": "autouse",
                                 "sessionMaxAge": "20",
@@ -49,16 +40,16 @@
                     "oidc": {
                         "providers": [
                             {
-                                "name": "authelia",
-                                "title": "Authelia",
+                                "name": "TestConnector",
+                                "title": "TestConnector",
                                 "authenticationClaimName": "email",
-                                "icon": "https://www.authelia.com/images/branding/logo-cropped.png",
+                                "icon": "https://www.TestConnector.com/images/branding/logo-cropped.png",
                                 "providerconfig": {
-                                    "issuer": "https://auth.1cdevelopers.ru",
-                                    "authorization_endpoint": "https://auth.1cdevelopers.ru/api/oidc/authorization",
-                                    "token_endpoint": "https://auth.1cdevelopers.ru/api/oidc/token",
-                                    "jwks_uri": "https://auth.1cdevelopers.ru/jwks.json",
-                                    "userinfo_endpoint": "https://auth.1cdevelopers.ru/api/oidc/userinfo",
+                                    "issuer": "https://auth.example.ru",
+                                    "authorization_endpoint": "https://auth.example.ru/api/oidc/authorization",
+                                    "token_endpoint": "https://auth.example.ru/api/oidc/token",
+                                    "jwks_uri": "https://auth.example.ru/jwks.json",
+                                    "userinfo_endpoint": "https://auth.example.ru/api/oidc/userinfo",
                                     "response_types_supported": [
                                         "token id_token"
                                     ],
@@ -69,9 +60,9 @@
                                     ]
                                 },
                                 "clientconfig": {
-                                    "authority": "https://auth.1cdevelopers.ru/api/oidc/authorization",
-                                    "client_id": "tg_bot",
-                                    "redirect_uri": "https://1c.1cdevelopers.ru/tg_bot/authform.html",
+                                    "authority": "https://auth.example.ru/api/oidc/authorization",
+                                    "client_id": "1cbase",
+                                    "redirect_uri": "https://1c.example.ru/tg_bot/authform.html",
                                     "response_type": "token id_token",
                                     "scope": "openid email"
                                 }
