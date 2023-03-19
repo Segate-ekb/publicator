@@ -87,7 +87,7 @@ function Publications() {
         const newPublication = {
             name,
             title,
-            actived: true,
+            active: true,
             enable: true,
             ws: {
                 publishExtensionsByDefault: true,
