@@ -13,7 +13,7 @@ export const DataProvider = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://1cdevelopers.ru/api/v1/getconfig.json');
+        const response = await fetch('/api/v1/getconfig.json');
         const strResponce = await response.text();
         const data = JSON.parse(strResponce);
         setJsonData(data);
@@ -35,7 +35,7 @@ export const DataProvider = ({ children }) => {
 
   const refreshData = async () => {
     try {
-      const response = await fetch('https://1cdevelopers.ru/api/v1/getconfig.json');
+      const response = await fetch('/api/v1/getconfig.json');
       const strResponce = await response.text();
       const data = JSON.parse(strResponce);
       setJsonData(data);
