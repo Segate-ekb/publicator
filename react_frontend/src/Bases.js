@@ -125,7 +125,7 @@ export default function BasesOptions(props) {
                     name: editedItem.Ref,
                     title: editedItem.name,
                     enable: true,
-                    activated: false,
+                    active: false,
                     ws: {
                         publishExtensionsByDefault: true
                     },
