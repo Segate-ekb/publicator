@@ -2,3 +2,6 @@
 /webserver/distr/*
 !/webserver/distr/.gitkeep
 /volumes/config.json
+node_modules
+
+/react_frontend/build
