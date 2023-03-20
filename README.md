@@ -1,3 +1,5 @@
+[![Chat on Telegram 1c DevOps](https://img.shields.io/badge/chat-Telegram-brightgreen.svg)](https://t.me/DevOps_onec)
+
 # Публикатор баз 1с
 
 Это механизм удобной и быстрой публикации баз 1с на веб-сервере.
