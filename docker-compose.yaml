@@ -7,5 +7,6 @@ services:
       - 998:80
       - 3333:3333
     volumes:
-     - ./volumes/config.json:/opt/app/winow/config/config.json
+      - "./volumes/config:/opt/app/winow/config"
+      # - "./volumes/autumn-properties.json:/opt/app/winow/autumn-properties.json"
     

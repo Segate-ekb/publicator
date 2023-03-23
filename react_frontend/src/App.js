@@ -1,50 +1,37 @@
-import * as React from 'react';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import AppBarComponent from './AppBarComponent';
-import Content from './Content';
-import { DataProvider } from './DataContext';
+import React, { useState, useContext } from "react";
+import {
+  Box,
+  Container,
+  Typography,
+  Link
+} from "@mui/material";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://1cdevelopers.ru/">
-        1cDevelopers.ru
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import AppBarMenu from "./components/appBarMenu/AppBarMenu";
+import BasesMenu from "./components/basesMenu/BasesMenu"
+import PublicationsInfo from "./components/PublicationsInfo/PublicationsInfo"
+import Copyright from "./components/Copyright";
 
 export default function App() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
-
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-
   return (
-    <DataProvider>
-
-       <AppBarComponent handleDrawerToggle={handleDrawerToggle} />
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '99vh',
-        }}
-      >
-        <Box sx={{ flexGrow: 1 }}>
-        <Content handleDrawerToggle={handleDrawerToggle} mobileOpen={mobileOpen} />
+    <>
+      <Box sx={{ display: "flex", height: "100vh", flexDirection: "column" }}>
+        <AppBarMenu handleDrawerToggle={handleDrawerToggle} position="fixed" />
+        <Box sx={{ display: "flex", flexGrow: 1 }}>
+          <BasesMenu handleDrawerToggle={handleDrawerToggle} mobileOpen={mobileOpen} />
+          <Box component="main" sx={{ flexGrow: 1, p: 3, display: "flex", flexDirection: "column" }}> 
+            <Container maxWidth="lg">
+              <PublicationsInfo />
+              <Copyright sx={{ marginTop: "auto" }} />
+            </Container>
+          </Box>
         </Box>
-        <Copyright />
       </Box>
-    </DataProvider>
+    </>
   );
 }

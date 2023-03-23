@@ -11,6 +11,7 @@
     "КаталогПубликаций": "var/www/1C/",
     "КаталогАпач": "/usr/local/apache2/",
     "ПутьК1С": "/opt/1cv8/current/",
-    "ПутьККонфигу": "./config/config.json"
+    "ПутьККонфигу": "./config/config.json",
+    "ПутьКНастройкам": "./config/settings.json"
   }
 }
