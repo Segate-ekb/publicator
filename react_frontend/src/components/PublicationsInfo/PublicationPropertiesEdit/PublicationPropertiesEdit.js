@@ -149,7 +149,7 @@ export default function PublicationPropertiesEdit({ open, publication, onClose }
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
             <DialogTitle>{update ? "Редактирование публикации: " + newPublication.title : "Создать новую публикацию"}</DialogTitle>
             <DialogContent>
-            <Tabs value={tabIndex} onChange={handleTabChange}>
+            <Tabs value={tabIndex} onChange={handleTabChange}  variant="scrollable" scrollButtons allowScrollButtonsMobile>
                     <Tab icon={<SettingsIcon />} label={isLargeScreen ? "Основные настройки" : ""} />
                     <Tab icon={<HttpIcon />} label={isLargeScreen ? "Http-сервисы" : ""} />
                     <Tab icon={<WebIcon />} label={isLargeScreen ? "Web-сервисы" : ""} />

@@ -52,7 +52,7 @@
 |    <providers>
 |       <![CDATA[%1]]>
 |    </providers>
-|
+|%2
 |</openidconnect>";
 
 КонецФункции	

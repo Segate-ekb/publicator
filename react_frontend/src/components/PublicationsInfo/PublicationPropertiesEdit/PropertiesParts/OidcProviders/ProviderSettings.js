@@ -15,13 +15,6 @@ export default function ProviderSettings({ provider, onChange, onDelete }) {
     const [tabValue, setTabValue] = React.useState(0);
     const matches = useMediaQuery(theme => theme.breakpoints.down('md'));
 
-    const handleInputChange = (event) => {
-        onChange({
-            ...provider,
-            [event.target.name]: event.target.value,
-        });
-    };
-
     const handleDeleteConfirmationOpen = () => {
         setConfirmationDialogOpen(true);
     };
@@ -48,12 +41,17 @@ export default function ProviderSettings({ provider, onChange, onDelete }) {
             <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12}>
                     <Box>
-                        <Tabs value={tabValue} onChange={handleTabChange}>
+                        <Tabs value={tabValue} onChange={handleTabChange} variant="scrollable" scrollButtons allowScrollButtonsMobile>
                             <Tab icon={<SettingsIcon />} label={!matches && "Общие настройки"} />
                             <Tab icon={<VpnKeyIcon />} label={!matches && "Настройки провайдера"} />
                             <Tab icon={<AccountCircleIcon />} label={!matches && "Настройки клиента"} />
                         </Tabs>
-                        {tabValue === 0 && <GeneralSettings provider={provider} onChange={handleProviderChange} />}
+                        {tabValue === 0 && (
+                            <GeneralSettings
+                                provider={provider}
+                                onChange={handleProviderChange}
+                            />
+                        )}
                         {tabValue === 1 && <ProviderSettingsTab provider={provider} onChange={handleProviderChange} />}
                         {tabValue === 2 && <ClientSettingsTab provider={provider} onChange={handleProviderChange} />}
                     </Box>

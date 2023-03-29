@@ -5,14 +5,29 @@ import AppContext from "../../../context/AppContext";
 const SettingsModal = ({ open, onClose }) => {
   const { state, updateSettings } = useContext(AppContext);
   const [settings, setSettings] = useState(state.settings);
+  const [errors, setErrors] = useState({ onecVersion: false });
 
   const handleChange = (e) => {
     setSettings({ ...settings, [e.target.name]: e.target.value });
   };
 
+  const validateOneCVersion = (value) => {
+    const pattern = /^8\.3\.\d{2}\.\d{4}$/;
+    return pattern.test(value);
+  };
+
+  const handleOneCVersionChange = (e) => {
+    const { name, value } = e.target;
+    const isValid = validateOneCVersion(value);
+    setErrors({ ...errors, onecVersion: !isValid });
+    handleChange(e);
+  };
+
   const handleSave = () => {
-    updateSettings(settings);
-    onClose();
+    if (!errors.onecVersion) {
+      updateSettings(settings);
+      onClose();
+    }
   };
 
   useEffect(() => {
@@ -37,12 +52,22 @@ const SettingsModal = ({ open, onClose }) => {
           fullWidth
           style={{ marginTop: '16px' }}
         />
+        <TextField
+          label="Версия 1С"
+          name="onecVersion"
+          value={settings.onecVersion}
+          onChange={handleOneCVersionChange}
+          fullWidth
+          style={{ marginTop: '16px' }}
+          error={errors.onecVersion}
+          helperText={errors.onecVersion && 'Введите версию 1С в формате 8.3.xx.xxxx'}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
           Закрыть
         </Button>
-        <Button onClick={handleSave} color="primary">
+        <Button onClick={handleSave} color="primary" disabled={errors.onecVersion}>
           Сохранить
         </Button>
       </DialogActions>

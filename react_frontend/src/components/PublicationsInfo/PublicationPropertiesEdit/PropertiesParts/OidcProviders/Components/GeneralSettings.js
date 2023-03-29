@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext  } from 'react';
 import {
     Typography,
     TextField,
@@ -8,10 +8,14 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import UploadIcon from '@mui/icons-material/Upload';
+import { ProvidersTemplate } from './ProvidersTemplate';
+import ConfirmationDialog from '../../../../../ConfirmationDialog';
+import AppContext from "../../../../../../context/AppContext";
 
-const InputImage = styled('input')({
+const InputImage = styled('input')(({ providerId }) => ({
     display: 'none',
-});
+    id: `contained-button-file-${providerId}`,
+}));
 
 const ImagePreview = styled('img')({
     maxHeight: '100px',
@@ -19,35 +23,54 @@ const ImagePreview = styled('img')({
 });
 
 export default function GeneralSettings({ provider, onChange, providers }) {
+    const { state } = useContext(AppContext);
     const [imagePreview, setImagePreview] = useState(provider.image);
     const [errors, setErrors] = useState({});
+    const [selectedProvider, setSelectedProvider] = useState(
+        ProvidersTemplate.find((templateGroup) => templateGroup.providerType === provider.providerType)
+    );
+    const [selectedFlow, setSelectedFlow] = useState(null);
+    const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
 
     useEffect(() => {
         validate(provider);
+        setImagePreview(provider.image);
     }, [provider]);
+
+    useEffect(() => {
+        if (provider.flowid && selectedProvider) {
+            setSelectedFlow(provider.flowId);
+        }
+    }, [provider, selectedProvider]);
+
+    useEffect(() => {
+        if (selectedFlow) {
+            handleFlowSelect(selectedFlow);
+        }
+    }, [selectedFlow]);
 
     const validate = (provider) => {
         const newErrors = {};
-      
+
         if (!provider.name || provider.name.trim() === '') {
-          newErrors.name = 'Name is required';
+            newErrors.name = 'Name is required';
         } else if (
-          providers &&
-          providers.some((p) => p.name === provider.name && p !== provider)
+            providers &&
+            providers.some((p) => p.name === provider.name && p !== provider)
         ) {
-          newErrors.name = 'Name must be unique';
+            newErrors.name = 'Name must be unique';
         }
-      
+
         if (!provider.title || provider.title.trim() === '') {
-          newErrors.title = 'Title is required';
+            newErrors.title = 'Title is required';
         }
-      
+
         if (provider.discovery && !isValidUrl(provider.discovery)) {
-          newErrors.discovery = 'Discovery must be a valid URL';
+            newErrors.discovery = 'Discovery must be a valid URL';
         }
-      
+
         setErrors(newErrors);
-      };
+    };
 
     const isValidUrl = (url) => {
         try {
@@ -83,10 +106,191 @@ export default function GeneralSettings({ provider, onChange, providers }) {
         }
     };
 
+    const [pendingProviderType, setPendingProviderType] = useState(null);
+    const [pendingFlowId, setPendingFlowId] = useState(null);
+
+    const handleProviderSelect = (providerType) => {
+        const selectedProvider = ProvidersTemplate.find(
+            (templateGroup) => templateGroup.providerType === providerType
+        );
+
+        if (
+            (provider.flowId && provider.providerType !== providerType) ||
+            (selectedProvider &&
+                selectedProvider.flows &&
+                selectedProvider.flows.length &&
+                provider.flowId &&
+                provider.flowId !== selectedProvider.flows[0].id)
+        ) {
+            // If changing provider or flow, prompt for confirmation
+            setPendingProviderType(providerType);
+            setPendingFlowId(null);
+            setConfirmationDialogOpen(true);
+        } else {
+            // Otherwise, update provider state immediately
+            setSelectedProvider(selectedProvider);
+            if (selectedProvider && selectedProvider.flows) {
+                const initialFlow =
+                    selectedProvider.flows.find((flow) => flow.id === provider.flowId) ||
+                    selectedProvider.flows[0];
+                setSelectedFlow(initialFlow.id);
+            } else {
+                setSelectedFlow(null);
+            }
+            onChange({
+                ...provider,
+                providerType,
+                flowId: null,
+            });
+        }
+    };
+
+    const handleFlowSelect = (flowId) => {
+        if (!selectedProvider) return;
+
+        if (provider.flowId !== flowId) {
+            // If changing flow, prompt for confirmation
+            setPendingProviderType(null);
+            setPendingFlowId(flowId);
+            setConfirmationDialogOpen(true);
+        } else {
+            // Otherwise, update provider state immediately
+            const selectedFlow = selectedProvider.flows.find((flow) => flow.id === flowId);
+            setSelectedFlow(flowId);
+
+            if (selectedFlow) {
+                onChange({
+                    ...provider,
+                    flowId,
+                    ...selectedFlow.settingsTemplate,
+                });
+            } else {
+                onChange({
+                    ...provider,
+                    flowId: null,
+                });
+            }
+        }
+    };
+
+    const handleDeleteConfirmationClose = (confirmed) => {
+        if (confirmed) {
+            // If user confirmed the dialog, update provider state
+            if (pendingProviderType !== null) {
+                const selectedProvider = ProvidersTemplate.find(
+                    (templateGroup) => templateGroup.providerType === pendingProviderType
+                );
+                setSelectedProvider(selectedProvider);
+                if (selectedProvider && selectedProvider.flows) {
+                    const initialFlow = selectedProvider.flows[0];
+                    setSelectedFlow(initialFlow.id);
+                    onChange({
+                        ...provider,
+                        providerType: pendingProviderType,
+                        flowId: initialFlow.id,
+                        ...initialFlow.settingsTemplate,
+                    });
+                } else {
+                    setSelectedFlow(null);
+                    onChange({
+                        ...provider,
+                        providerType: pendingProviderType,
+                        flowId: null,
+                    });
+                }
+            } else {
+                const selectedFlow = selectedProvider.flows.find((flow) => flow.id === pendingFlowId);
+                setSelectedFlow(pendingFlowId);
+                if (selectedFlow) {
+                    onChange({
+                        ...provider,
+                        flowId: pendingFlowId,
+                        ...selectedFlow.settingsTemplate,
+                    });
+                } else {
+                    onChange({
+                        ...provider,
+                        flowId: null,
+                    });
+                }
+            }
+        } else {
+            // If user cancelled the dialog, reset the pending state
+            setPendingProviderType(null);
+            setPendingFlowId(null);
+        }
+        setConfirmationDialogOpen(false);
+    };
+
+    const versionValid = (minVersion) => {
+        if (!minVersion) return true;
+        const onecVersion = state.settings.onecVersion;
+        if (!onecVersion) return true;
+
+        const [minMajor, minMinor, minPatch, minBuild] = minVersion.split('.').map(Number);
+        const [onecMajor, onecMinor, onecPatch, onecBuild] = onecVersion.split('.').map(Number);
+
+        if (onecMajor > minMajor) return true;
+        if (onecMajor < minMajor) return false;
+        if (onecMinor > minMinor) return true;
+        if (onecMinor < minMinor) return false;
+        if (onecPatch > minPatch) return true;
+        if (onecPatch < minPatch) return false;
+        if (onecBuild >= minBuild) return true;
+
+        return false;
+    };
+
 
     return (
         <div>
             <Grid container spacing={2} alignItems="center" sx={{ mt: 0.5 }}>
+                <Grid item xs={12} sm={8}>
+                    <TextField
+                        select
+                        label="Выберите провайдера"
+                        value={provider.providerType}
+                        onChange={(event) => handleProviderSelect(event.target.value)}
+                        fullWidth
+                        name="providerType"
+                        SelectProps={{
+                            native: true,
+                        }}
+                    >
+                        {ProvidersTemplate.map((templateGroup, index) => (
+                            <option key={index} value={templateGroup.providerType}>
+                                {templateGroup.providerType}
+                            </option>
+                        ))}
+                    </TextField>
+                </Grid>
+                {selectedProvider && selectedProvider.flows && (
+                    <Grid item xs={12} sm={4}>
+                        <TextField
+                            select
+                            label="Выберите flow подключения"
+                            value={selectedFlow}
+                            onChange={(event) => handleFlowSelect(event.target.value)}
+                            fullWidth
+                            name="flow"
+                            SelectProps={{
+                                native: true,
+                            }}
+                        >
+                            {selectedProvider.flows.map((flow) => (
+                                versionValid(flow.minVersion) ? (
+                                    <option key={flow.id} value={flow.id}>
+                                        {flow.id}
+                                    </option>
+                                ) : (
+                                    <option key={flow.id} value={flow.id} disabled>
+                                        (Доступен с версии {flow.minVersion}) {flow.id}
+                                    </option>
+                                )
+                            ))}
+                        </TextField>
+                    </Grid>
+                )}
                 <Grid item xs={12} sm={6}>
                     <TextField
                         error={Boolean(errors.name)}
@@ -155,14 +359,26 @@ export default function GeneralSettings({ provider, onChange, providers }) {
                     />
                 </Grid>
                 <Grid item xs={12} sm={6}>
+                    <TextField
+                        error={Boolean(errors.discovery)}
+                        helperText={errors.discovery}
+                        label="Discovery"
+                        name="discovery"
+                        value={provider.discovery}
+                        onChange={handleInputChange}
+                        fullWidth
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
                     <Box>
                         <InputImage
                             accept="image/*"
-                            id="contained-button-file"
+                            id={`contained-button-file-${provider.id}`}
                             type="file"
                             onChange={handleImageUpload}
+                            providerId={provider.id}
                         />
-                        <label htmlFor="contained-button-file">
+                        <label htmlFor={`contained-button-file-${provider.id}`}>
                             <Button component="span" color="inherit" startIcon={<UploadIcon />}>
                                 Загрузить изображение
                             </Button>
@@ -175,18 +391,13 @@ export default function GeneralSettings({ provider, onChange, providers }) {
                         />
                     )}
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                    <TextField
-                        error={Boolean(errors.discovery)}
-                        helperText={errors.discovery}
-                        label="Discovery"
-                        name="discovery"
-                        value={provider.discovery}
-                        onChange={handleInputChange}
-                        fullWidth
-                    />
-                </Grid>
             </Grid>
+            <ConfirmationDialog
+                open={confirmationDialogOpen}
+                title="Перезаполнение данных о провайдере"
+                content="Вы сменили тип провайдера. Данные будут перезаполнены! Вы уверены?"
+                onClose={handleDeleteConfirmationClose}
+            />
         </div>
     );
 }
