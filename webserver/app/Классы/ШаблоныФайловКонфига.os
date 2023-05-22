@@ -28,7 +28,7 @@
 КонецФункции
 
 Функция КонфигПубликацииСервераХранилища() Экспорт
-	Возврат  "Alias ""/%1"" ""/%2/""
+	 Возврат  "Alias ""/%1"" ""/%2/""
 			|<Directory ""/%2/"">
 			|	AllowOverride All
 			|	Require all granted
@@ -78,5 +78,5 @@
 
 Функция crsPublication() Экспорт
 	Возврат "<?xml version=""1.0"" encoding=""UTF-8""?>
-	<repository connectString=""%1""/>";
+|	<repository connectString=""%1""/>";
 КонецФункции

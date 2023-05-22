@@ -3,7 +3,7 @@ FROM alpine:latest as downloader
 ARG ONEC_USERNAME
 ARG ONEC_PASSWORD
 ARG ONEC_VERSION
-ENV installer_type=server
+ENV installer_type=server-crs
 ENV downloads=downloads/platform83/${ONEC_VERSION}
 ENV RAS_PORT=1545
 ENV RAS_CLUSTER_ADDRESS=''
@@ -52,7 +52,7 @@ RUN apt-get install -yq geoclue-2.0 gstreamer1.0-plugins-bad
 RUN export LANG=ru_RU.UTF-8
 
 ARG ONEC_VERSION
-ENV installer_type=server
+ENV installer_type=server-crs
 ARG gosu_ver=1.11
 ARG nls_enabled=false
 ENV nls=$nls_enabled
@@ -147,6 +147,9 @@ RUN opm install opm \
 
 COPY ./webserver/docker-entrypoint.sh /winow/
 COPY ./webserver/app /opt/app/winow/ 
+
+RUN mkdir -p /opt/app/repo \
+  && chmod -R 777 /opt/app/repo
 
 RUN chmod 755 /winow/docker-entrypoint.sh \
   && chmod +x /winow/docker-entrypoint.sh
