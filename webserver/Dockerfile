@@ -3,7 +3,7 @@ FROM alpine:latest as downloader
 ARG ONEC_USERNAME
 ARG ONEC_PASSWORD
 ARG ONEC_VERSION
-ENV installer_type=server
+ENV installer_type=server-crs-ws
 ENV downloads=downloads/platform83/${ONEC_VERSION}
 ENV RAS_PORT=1545
 ENV RAS_CLUSTER_ADDRESS=''
@@ -16,6 +16,9 @@ ENV SRV1CV8_DATA=/home/usr1cv8/.1cv8/1C/1cv8
 ENV SRV1CV8_SECLEV=0
 ENV SRV1CV8_PINGPERIOD=1000
 ENV SRV1CV8_PINGTIMEOUT=5000
+ARG gosu_ver=1.11
+ARG nls_enabled=false
+ENV nls=$nls_enabled
 
 COPY ./webserver/scripts/download_og.sh /download_og.sh
 
@@ -51,11 +54,6 @@ RUN apt-get install -yq geoclue-2.0 gstreamer1.0-plugins-bad
 # Правим локаль на русскую
 RUN export LANG=ru_RU.UTF-8
 
-ARG ONEC_VERSION
-ENV installer_type=server
-ARG gosu_ver=1.11
-ARG nls_enabled=false
-ENV nls=$nls_enabled
 
 COPY ./webserver/scripts/install.sh /install.sh
 COPY --from=downloader /tmp/*.* /tmp/

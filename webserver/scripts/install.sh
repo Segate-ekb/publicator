@@ -58,6 +58,11 @@ else
 	    echo $nls_install
 	    ./setup-full-${ONEC_VERSION}-x86_64.run --mode unattended --enable-components server,ws,$nls_install
           ;;
+      server-crs-ws)
+            set -x
+	    echo $nls_install
+	    ./setup-full-${ONEC_VERSION}-x86_64.run --mode unattended --enable-components server,ws,config_storage_server,$nls_install    
+          ;;
       server32)
 	    ./setup-full-${ONEC_VERSION}-i386.run --mode unattended --enable-components server,ws,config_storage_server,$nls_install
           ;;
