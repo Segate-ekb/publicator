@@ -4,7 +4,7 @@ import App from "./App";
 import { ThemeProviderWrapper } from "./ThemeContext";
 import AppContextProvider from "./context/AppContextProvider.js";
 import { SnackbarProvider } from "notistack";
-import * as serviceWorker from "./serviceWorker";
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 const rootElement = document.getElementById("root");
 const root = ReactDOM.createRoot(rootElement);
@@ -19,15 +19,5 @@ root.render(
   </ThemeProviderWrapper>
 );
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/service-worker.js")
-      .then((registration) => {
-        console.log("SW registered: ", registration);
-      })
-      .catch((registrationError) => {
-        console.log("SW registration failed: ", registrationError);
-      });
-  });
-}
+// Register the service worker
+serviceWorkerRegistration.register();

@@ -4,9 +4,10 @@ services:
   publikator:
     image: 192.168.1.53:5000/publicator:8.3.20.2180
     ports:
-      - 998:80
-      - 3333:3333
+      - 995:80
+      - 4545:3333
     volumes:
       - "./volumes/config:/opt/app/winow/config"
+      - "./volumes/repo:/opt/app/repo"
       # - "./volumes/autumn-properties.json:/opt/app/winow/autumn-properties.json"
     

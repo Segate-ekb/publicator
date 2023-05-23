@@ -27,6 +27,18 @@
 			|</Directory>";
 КонецФункции
 
+Функция КонфигПубликацииСервераХранилища() Экспорт
+	 Возврат  "Alias ""/%1"" ""/%2/""
+			|<Directory ""/%2/"">
+			|	AllowOverride All
+			|	Require all granted
+			|   Order allow,deny
+			|	Allow from all
+			|	SetHandler 1cws-process
+			|</Directory>";
+
+КонецФункции
+
 Функция СекцияPoint() Экспорт
 	Возврат "<point name=""%1""
 |			alias=""%2""
@@ -59,6 +71,12 @@
 
 Функция base_onec_config() Экспорт
 	Возврат "LoadModule _1cws_module %1
+|AddHandler 1cws-process .1ccr
 |
 |# Тут будут описания всех подключенных конфигураций";
+КонецФункции
+
+Функция crsPublication() Экспорт
+	Возврат "<?xml version=""1.0"" encoding=""UTF-8""?>
+|	<repository connectString=""%1""/>";
 КонецФункции

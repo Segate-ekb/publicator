@@ -2,28 +2,91 @@ import React, { useContext, useState } from "react";
 import {
   Box,
   Drawer,
-  Hidden,
   List,
   ListItem,
   IconButton,
   ListItemButton,
   ListItemText,
-  Fab,
-  CssBaseline
+  CssBaseline,
+  Divider
 } from "@mui/material";
 import { styled } from "@mui/system";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
+import StorageIcon from "@mui/icons-material/Storage";
+import SpeedDial from "@mui/material/SpeedDial";
+import SpeedDialIcon from "@mui/material/SpeedDialIcon";
+import SpeedDialAction from "@mui/material/SpeedDialAction";
 import AppContext from "../../context/AppContext";
 import BaseSettingsEdit from "./components/BaseSettingsEdit";
+import CrsServerEdit from "./components/CrsServerEdit";
 
 const drawerWidth = 360;
 
-const AddFab = styled(Fab)(({ theme }) => ({
+const StyledSpeedDial = styled(SpeedDial)(({ theme }) => ({
   position: "absolute",
   bottom: theme.spacing(9),
   right: theme.spacing(2),
 }));
+
+const CrsList = ({ crs, handleEditDialogOpen }) => {
+  const { showSnackbar } = useContext(AppContext);
+
+
+  const handleCopy = async (server) => {
+    if (!navigator.clipboard) {
+      showSnackbar('Копирование в буфер обмена не поддерживается в вашем браузере.', 'error');
+      return;
+    }
+    
+    try {
+      const serverAddress = `${server.tcpAddress}/${server.name}/repo.1ccr`;
+      await navigator.clipboard.writeText(serverAddress);
+      showSnackbar('Адрес сервера скопирован в буфер обмена.', 'success');
+    } catch (err) {
+      showSnackbar('Ошибка при копировании адреса сервера в буфер обмена.', 'error');
+    }
+  };
+
+  if (crs.length === 0) {
+    return (
+      <ListItem
+        secondaryAction={
+          <IconButton
+            edge="end"
+            aria-label="new"
+            onClick={() => handleEditDialogOpen(null)}
+          >
+            <AddIcon />
+          </IconButton>
+        }
+        disablePadding
+      >
+        <ListItemText primary="Добавьте сервер хранилища." style={{ marginLeft: "20px" }} />
+      </ListItem>
+    );
+  }
+
+  return crs.map((server) => (
+    <ListItem
+      key={server.id}
+      secondaryAction={
+        <IconButton
+          edge="end"
+          aria-label="edit"
+          onClick={() => handleEditDialogOpen(server)}
+        >
+          <EditIcon />
+        </IconButton>
+      }
+      disablePadding
+    >
+      <ListItemButton onClick={() => handleCopy(server)}>
+        <ListItemText primary={server.title} />
+      </ListItemButton>
+    </ListItem>
+  ));
+};
 
 export default function BasesMenu(props) {
   const { window } = props;
@@ -32,13 +95,42 @@ export default function BasesMenu(props) {
     addBase,
     updateBase,
     deleteBase,
+    addServer,
+    updateServer,
+    deleteServer,
     showSnackbar,
     setSelectedBaseId,
   } = useContext(AppContext);
   const { handleDrawerToggle, mobileOpen } = props;
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [serverDialogOpen, setServerDialogOpen] = useState(false);
   const [editingBase, setEditingBase] = useState(null);
+  const [editingServer, setEditingServer] = useState(null);
   const container = window !== undefined ? () => window().document.body : undefined;
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const handleServerDialogOpen = (server) => {
+    setEditingServer(server);
+    setServerDialogOpen(true);
+  };
+
+  const handleServerDialogClose = (server) => {
+    setServerDialogOpen(false);
+
+    if (server) {
+      if (editingServer) {
+        updateServer(server);
+        showSnackbar("Сервер успешно обновлен", "success");
+      } else {
+        addServer(server);
+        showSnackbar("Сервер успешно добавлен", "success");
+      }
+    }
+
+    setEditingServer(null);
+  };
 
   const handleEditDialogOpen = (base) => {
     setEditingBase(base);
@@ -65,6 +157,11 @@ export default function BasesMenu(props) {
     setSelectedBaseId(id);
   };
 
+  const actions = [
+    { icon: <AddIcon />, name: 'Создать базу', action: () => handleEditDialogOpen(null) },
+    { icon: <StorageIcon />, name: 'Создать сервер хранилища', action: () => handleServerDialogOpen(null)}
+  ];
+
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   const toggleDrawer = (open) => (event) => {
@@ -80,6 +177,7 @@ export default function BasesMenu(props) {
   const drawerContent = (
     <Box>
       <List>
+      <Divider textAlign="left">Базы</Divider>
         {state.bases.length === 0 ? (
           <ListItem secondaryAction={<IconButton
             edge="end"
@@ -91,7 +189,7 @@ export default function BasesMenu(props) {
           }
             disablePadding
           >
-            <ListItemText primary="Добаьте первую базу." style={{ marginLeft: "20px" }} />
+            <ListItemText primary="Добавьте первую базу." style={{ marginLeft: "20px" }} />
           </ListItem>
         ) : (
           state.bases.map((base) => (
@@ -114,14 +212,30 @@ export default function BasesMenu(props) {
               >
                 <ListItemText primary={base.name} />
               </ListItemButton>
-
             </ListItem>
           ))
         )}
+        <Divider textAlign="left">Хранилище</Divider>
+        <CrsList crs={state.crs} handleEditDialogOpen={handleServerDialogOpen} />
       </List>
-      <AddFab color="primary" onClick={() => handleEditDialogOpen()}>
-        <AddIcon />
-      </AddFab>
+
+      <StyledSpeedDial
+        ariaLabel="SpeedDial tooltip example"
+        icon={<SpeedDialIcon />}
+        onClose={handleClose}
+        onOpen={handleOpen}
+        open={open}
+      >
+        {actions.map((action) => (
+          <SpeedDialAction
+            key={action.name}
+            icon={action.icon}
+            tooltipTitle={action.name}
+            // tooltipOpen
+            onClick={action.action}
+          />
+        ))}
+      </StyledSpeedDial>
     </Box>
   );
 
@@ -151,7 +265,6 @@ export default function BasesMenu(props) {
         sx={{
           display: { xs: "none", sm: "none", md: "block" },
           width: drawerWidth,
-
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: { width: drawerWidth, marginTop: 8, boxSizing: 'border-box' },
         }}
@@ -164,6 +277,12 @@ export default function BasesMenu(props) {
         base={editingBase}
         onClose={handleEditDialogClose}
         deleteBase={deleteBase}
+      />
+      <CrsServerEdit
+        open={serverDialogOpen}
+        server={editingServer}
+        onClose={handleServerDialogClose}
+        deleteServer={deleteServer}
       />
     </div>
   );

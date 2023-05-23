@@ -29,11 +29,11 @@ export const restartServer = async (showSnackbar) => {
 };
 
 export const getConfig = async (showSnackbar) => {
-  return sendRequest(`/api/v1/config/getconfig`, showSnackbar);
+  return sendRequest(`https://publicator.1cdevelopers.ru/api/v1/config/getconfig`, showSnackbar);
 };
 
 export const getSettings = async (showSnackbar) => {
-  return sendRequest(`/api/v1/config/getsettings`, showSnackbar);
+  return sendRequest(`https://publicator.1cdevelopers.ru/api/v1/config/getsettings`, showSnackbar);
 };
 
 const sendPostRequest = async (url, data, showSnackbar) => {
@@ -60,6 +60,6 @@ const sendPostRequest = async (url, data, showSnackbar) => {
     return sendPostRequest(`/api/v1/config/updatesettings`, settings, showSnackbar);
   };
   
-  export const updateConfig = async (bases, showSnackbar) => {
-    return sendPostRequest(`/api/v1/config/updateconfig`, { bases }, showSnackbar);
+  export const updateConfig = async (bases, crs, showSnackbar) => {
+    return sendPostRequest(`/api/v1/config/updateconfig`, { bases, crs }, showSnackbar);
   };
