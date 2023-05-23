@@ -16,6 +16,9 @@ ENV SRV1CV8_DATA=/home/usr1cv8/.1cv8/1C/1cv8
 ENV SRV1CV8_SECLEV=0
 ENV SRV1CV8_PINGPERIOD=1000
 ENV SRV1CV8_PINGTIMEOUT=5000
+ARG gosu_ver=1.11
+ARG nls_enabled=false
+ENV nls=$nls_enabled
 
 COPY ./webserver/scripts/download_og.sh /download_og.sh
 
@@ -56,6 +59,7 @@ ENV installer_type=server-crs
 ARG gosu_ver=1.11
 ARG nls_enabled=false
 ENV nls=$nls_enabled
+
 
 COPY ./webserver/scripts/install.sh /install.sh
 COPY --from=downloader /tmp/*.* /tmp/
