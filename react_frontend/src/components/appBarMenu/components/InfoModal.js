@@ -6,7 +6,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 
 function ProjectInfoForm({ open, onClose }) {
     const projectName = 'Публикатор 1С';
-    const projectVersion = '1.0.0';
+    const projectVersion = '1.1.0';
     const projectDescription = 'Проект преднозначен для удобной работы с публикациями на Веб-сервере.  Код полностью открыт и доступен! \n Присоединяйтесь в катанл в телеграм, чтобы не пропутсить критичные обновления.';
     const telegramUrl = 'https://t.me/DevOps_onec';
     const githubUrl = 'https://github.com/Segate-ekb/publicator';
