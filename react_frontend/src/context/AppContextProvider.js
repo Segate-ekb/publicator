@@ -9,9 +9,11 @@ const AppContextProvider = ({ children }) => {
     bases: [],
     selectedBaseId: null,
     settings: {},
+    crs: []
   };
 
   const [baseUpdated, setBaseUpdated] = useState(false);
+  const [crsUpdated, setCrsUpdated] = useState(false);
   const [settingsUpdated, setSettingsUpdated] = useState(false);
 
   function appReducer(state, action) {
@@ -79,7 +81,21 @@ const AppContextProvider = ({ children }) => {
       case "SET_SELECTED_BASE_ID":
         return { ...state, selectedBaseId: action.payload };
       case "UPDATE_SETTINGS":
-          return { ...state, settings: action.payload };
+        return { ...state, settings: action.payload };
+      case "ADD_SERVERS":
+        return { ...state, crs: action.payload };    
+      case "ADD_SERVER":
+        return { ...state, crs: [...state.crs, action.payload] };
+      case "UPDATE_SERVER":
+        return {
+          ...state,
+        crs: updateItem(state.crs, action.payload.id, () => action.payload),
+        };
+      case 'DELETE_SERVER':
+      return {
+          ...state,
+          crs: state.crs.filter(server => server.id !== action.payload),
+        };    
       default:
         return state;
     }
@@ -96,8 +112,19 @@ const AppContextProvider = ({ children }) => {
     const fetchData = async () => {
       const configData = await ApiProcessor.getConfig(showSnackbar);
       if (configData) {
+        if (!configData.crs || configData.crs.length === 0) {
+          configData.crs = [{
+            id:  uuidv4(),
+            name: "repository",
+            active: false,
+            title: "Репозиторий по умолчанию",
+            tcpAddress: "tcp://localhost"
+          }];
+        }
+    
         addBases(configData.bases);
-      }
+        addCrs(configData.crs);
+    }
 
       const settingsData = await ApiProcessor.getSettings(showSnackbar);
       if (settingsData) {
@@ -111,7 +138,7 @@ const AppContextProvider = ({ children }) => {
 
   useEffect(() => {
     const updateBases = async () => {
-      await ApiProcessor.updateConfig(state.bases, showSnackbar);
+      await ApiProcessor.updateConfig(state.bases, state.crs, showSnackbar);
       setBaseUpdated(false);
     };
   
@@ -119,6 +146,17 @@ const AppContextProvider = ({ children }) => {
       updateBases();
     }
   }, [state.bases, baseUpdated]);
+
+  useEffect(() => {
+    const updateCrs = async () => {
+      await ApiProcessor.updateConfig(state.bases, state.crs, showSnackbar);
+      setCrsUpdated(false);
+    };
+  
+    if (crsUpdated) {
+      updateCrs();
+    }
+  }, [state.crs, crsUpdated]);
 
   useEffect(() => {
     const saveSettings = async () => {
@@ -182,6 +220,35 @@ const AppContextProvider = ({ children }) => {
   const deleteBase = (deletedBase) => {
     dispatch({ type: 'DELETE_BASE', payload: deletedBase.id });
     setBaseUpdated(true);
+  };
+
+  const addCrs = (newServers) => {
+    dispatch({ type: "ADD_SERVERS", payload: newServers });
+  };
+
+  const addServer = (newServer) => {
+    const payload = {
+      id: uuidv4(),
+      name: newServer.name,
+      active: newServer.active,
+      title: newServer.title,
+      tcpAddress: newServer.tcpAddress
+    };
+    dispatch({
+      type: "ADD_SERVER",
+      payload: payload,
+    });
+    setCrsUpdated(true);
+  };
+  
+  const updateServer = (updatedServer) => {
+    dispatch({ type: "UPDATE_SERVER", payload: updatedServer });
+    setCrsUpdated(true);
+  };
+  
+  const deleteServer = (deletedServer) => {
+    dispatch({ type: 'DELETE_SERVER', payload: deletedServer.id });
+    setCrsUpdated(true);
   };
 
   const updatePublication = (publicationId, updatedPublication) => {
@@ -264,7 +331,10 @@ const AppContextProvider = ({ children }) => {
         getUniqueTitles,
         getUniqueEndpoints,
         deletePublication,
-        updateSettings
+        updateSettings,
+        addServer, 
+        updateServer,
+        deleteServer,
       }}
     >
       {children}

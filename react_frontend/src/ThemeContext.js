@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material";
 
 const lightTheme = createTheme({
@@ -28,7 +28,11 @@ const darkTheme = createTheme({
 const ThemeContext = createContext();
 
 export const ThemeProviderWrapper = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(localStorage.getItem('theme') === 'dark');
+
+  useEffect(() => {
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+  }, [darkMode]);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
