@@ -29,11 +29,11 @@ export const restartServer = async (showSnackbar) => {
 };
 
 export const getConfig = async (showSnackbar) => {
-  return sendRequest(`https://publicator.1cdevelopers.ru/api/v1/config/getconfig`, showSnackbar);
+  return sendRequest(`/api/v1/config/getconfig`, showSnackbar);
 };
 
 export const getSettings = async (showSnackbar) => {
-  return sendRequest(`https://publicator.1cdevelopers.ru/api/v1/config/getsettings`, showSnackbar);
+  return sendRequest(`/api/v1/config/getsettings`, showSnackbar);
 };
 
 const sendPostRequest = async (url, data, showSnackbar) => {

@@ -30,7 +30,7 @@ const StyledSpeedDial = styled(SpeedDial)(({ theme }) => ({
 }));
 
 const CrsList = ({ crs, handleEditDialogOpen }) => {
-  const { showSnackbar } = useContext(AppContext);
+  const { showSnackbar, state } = useContext(AppContext);
 
 
   const handleCopy = async (server) => {
@@ -40,7 +40,9 @@ const CrsList = ({ crs, handleEditDialogOpen }) => {
     }
     
     try {
-      const serverAddress = `${server.tcpAddress}/${server.name}/repo.1ccr`;
+      const cleanedBaseUrl = state.settings.publicationServerUrl.replace(/\/+$/, ""); // убираем слэши в конце строки
+      const cleanedPublicationName = server.name.replace(/^\/+/, ""); 
+      const serverAddress = `${cleanedBaseUrl}/${cleanedPublicationName}/repo.1ccr`;
       await navigator.clipboard.writeText(serverAddress);
       showSnackbar('Адрес сервера скопирован в буфер обмена.', 'success');
     } catch (err) {
