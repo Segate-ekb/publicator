@@ -48,6 +48,9 @@ case "$installer_type" in
   server)
       /tmp/oneget_tool/oneget get "platform:"$package$package_installer_type".x64@"$ONEC_VERSION
       ;;
+  server-crs)
+      /tmp/oneget_tool/oneget get "platform:"$package$package_installer_type".x64@"$ONEC_VERSION
+      ;;    
   server32)
       /tmp/oneget_tool/oneget get "platform:"$package${package_installer_type/32/}".x32@"$ONEC_VERSION
       ;;
