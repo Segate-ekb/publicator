@@ -3,5 +3,5 @@
 !/webserver/distr/.gitkeep
 /volumes/config.json
 node_modules
-
+/oscript_modules
 /react_frontend/build
